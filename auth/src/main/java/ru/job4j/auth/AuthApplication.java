@@ -1,13 +1,13 @@
-package ru.job4j.rest;
+package ru.job4j.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestApplication {
+public class AuthApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RestApplication.class, args);
+        SpringApplication.run(AuthApplication.class, args);
     }
 
 }

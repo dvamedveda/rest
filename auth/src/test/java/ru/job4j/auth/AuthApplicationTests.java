@@ -1,10 +1,10 @@
-package ru.job4j.rest;
+package ru.job4j.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RestApplicationTests {
+class AuthApplicationTests {
 
     @Test
     void contextLoads() {
