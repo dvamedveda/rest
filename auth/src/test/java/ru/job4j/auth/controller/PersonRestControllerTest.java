@@ -58,9 +58,9 @@ public class PersonRestControllerTest {
     @Test
     public void whenGetAllThenCorrect() throws Exception {
         List<Person> testPersons = new ArrayList<>();
-        testPersons.add(Person.of(1, "One user", "User one"));
-        testPersons.add(Person.of(2, "Two user", "User two"));
-        testPersons.add(Person.of(3, "Three user", "User three"));
+        testPersons.add(Person.of(1, "One user", "User one", 1));
+        testPersons.add(Person.of(2, "Two user", "User two", 1));
+        testPersons.add(Person.of(3, "Three user", "User three", 1));
         Mockito.when(this.personService.findAllPersons()).thenReturn(testPersons);
         this.mvc.perform(get("/person/").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -84,7 +84,7 @@ public class PersonRestControllerTest {
      */
     @Test
     public void whenGetExistConcreteThenGetPersonAndHttp200() throws Exception {
-        Optional<Person> testPerson = Optional.of(Person.of(4, "Four user", "User four"));
+        Optional<Person> testPerson = Optional.of(Person.of(4, "Four user", "User four", 5));
         Mockito.when(this.personService.findUserById(Mockito.eq(4))).thenReturn(testPerson);
         this.mvc.perform(get("/person/4").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -120,10 +120,11 @@ public class PersonRestControllerTest {
     public void whenPostNewThenCreatesCorrect() throws Exception {
         String testLogin = "testCreatedLogin";
         String testPassword = "testCreatedPassword";
-        Optional<Person> testPerson = Optional.of(Person.of(1, testLogin, testPassword));
+        Optional<Person> testPerson = Optional.of(Person.of(1, testLogin, testPassword, 1));
         Mockito.when(this.personService.saveUser(Mockito.any())).thenReturn(testPerson);
         this.mvc.perform(post("/person/")
-                .content(String.format("{\"id\": 0, \"login\": \"%s\", \"password\": \"%s\"}", testLogin, testPassword))
+                .content(String.format("{\"id\": 0, \"login\": \"%s\", \"password\": \"%s\", \"employeeId\": 1}",
+                        testLogin, testPassword))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -134,6 +135,7 @@ public class PersonRestControllerTest {
         Assert.assertThat(savedPerson.getId(), is(0));
         Assert.assertThat(savedPerson.getLogin(), is(testLogin));
         Assert.assertThat(savedPerson.getPassword(), is(testPassword));
+        Assert.assertThat(savedPerson.getEmployeeId(), is(1));
     }
 
     /**
@@ -144,10 +146,11 @@ public class PersonRestControllerTest {
     public void whenUpdateExistUserThenUpdatesCorrect() throws Exception {
         String newLogin = "testUpdateLogin";
         String newPassword = "testUpdatePassword";
-        Optional<Person> testPerson = Optional.of(Person.of(1, newLogin, newPassword));
+        Optional<Person> testPerson = Optional.of(Person.of(1, newLogin, newPassword, 1));
         Mockito.when(this.personService.updateUser(Mockito.any())).thenReturn(testPerson);
         this.mvc.perform(put("/person/")
-                .content(String.format("{\"id\": 1, \"login\": \"%s\", \"password\": \"%s\"}", newLogin, newPassword))
+                .content(String.format("{\"id\": 1, \"login\": \"%s\", \"password\": \"%s\", \"employeeId\": 1}",
+                        newLogin, newPassword))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -156,6 +159,7 @@ public class PersonRestControllerTest {
         Person updatedPerson = personCaptor.getValue();
         Assert.assertThat(updatedPerson.getId(), is(1));
         Assert.assertThat(updatedPerson.getLogin(), is(newLogin));
+        Assert.assertThat(updatedPerson.getPassword(), is(newPassword));
         Assert.assertThat(updatedPerson.getPassword(), is(newPassword));
     }
 
@@ -173,5 +177,20 @@ public class PersonRestControllerTest {
         Mockito.verify(this.personService).deleteUser(idCaptor.capture());
         int deletePersonId = idCaptor.getValue();
         Assert.assertThat(deletePersonId, is(1));
+    }
+
+    /**
+     * Проверка получения пользователей по идентификатору сотрудника.
+     * @throws Exception в случае ошибок работы контроллера.
+     */
+    @Test
+    public void whenGetEmployeePersonsThenCorrect() throws Exception {
+        this.mvc.perform(get("/person/employee/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+        ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+        Mockito.verify(this.personService).findAllByEmployeeId(idCaptor.capture());
+        int employeeId = idCaptor.getValue();
+        Assert.assertThat(employeeId, is(1));
     }
 }

@@ -85,4 +85,9 @@ public class PersonRestController {
         this.personService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/employee/{employeeId}")
+    public List<Person> findAllForEmployee(@PathVariable("employeeId") int employeeId) {
+        return this.personService.findAllByEmployeeId(employeeId);
+    }
 }

@@ -87,4 +87,12 @@ public class PersonService {
         }
         return result;
     }
+
+    public List<Person> findAllByEmployeeId(int employeeId) {
+        return StreamSupport.stream(
+                this.personRepository
+                        .findAllByEmployeeId(employeeId)
+                        .spliterator(), false)
+                .collect(Collectors.toList());
+    }
 }

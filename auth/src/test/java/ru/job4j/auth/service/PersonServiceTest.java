@@ -2,7 +2,6 @@ package ru.job4j.auth.service;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,9 +47,9 @@ public class PersonServiceTest {
     @Test
     public void whenExistUsersThenFindAllCorrect() {
         Collection<Person> persons = new ArrayList<>();
-        Person one = Person.of(1, "service user one", "one user service");
-        Person two = Person.of(2, "service user two", "two user service");
-        Person three = Person.of(3, "service user three", "three user service");
+        Person one = Person.of(1, "service user one", "one user service", 1);
+        Person two = Person.of(2, "service user two", "two user service", 2);
+        Person three = Person.of(3, "service user three", "three user service", 3);
         persons.add(one);
         persons.add(two);
         persons.add(three);
@@ -81,7 +80,8 @@ public class PersonServiceTest {
         int originId = 1;
         String originLogin = "find by id";
         String originPassword = "id by find";
-        Optional<Person> mockPerson = Optional.of(Person.of(originId, originLogin, originPassword));
+        int originEmp = 4;
+        Optional<Person> mockPerson = Optional.of(Person.of(originId, originLogin, originPassword, originEmp));
         Mockito.when(this.personRepository.findById(1)).thenReturn(mockPerson);
         Optional<Person> result = this.personService.findUserById(1);
         Assert.assertThat(result.isPresent(), is(true));
@@ -89,6 +89,7 @@ public class PersonServiceTest {
         Assert.assertThat(resultPerson.getId(), is(originId));
         Assert.assertThat(resultPerson.getLogin(), is(originLogin));
         Assert.assertThat(resultPerson.getPassword(), is(originPassword));
+        Assert.assertThat(resultPerson.getEmployeeId(), is(originEmp));
     }
 
     /**
@@ -99,7 +100,8 @@ public class PersonServiceTest {
         int originId = 3;
         String originLogin = "save user";
         String originPassword = "user save";
-        Person mockPerson = Person.of(originId, originLogin, originPassword);
+        int originEmp = 5;
+        Person mockPerson = Person.of(originId, originLogin, originPassword, originEmp);
         Mockito.when(this.personRepository.save(Mockito.any(Person.class))).thenReturn(mockPerson);
         Person savingUser = new Person();
         savingUser.setLogin("save user");
@@ -110,6 +112,7 @@ public class PersonServiceTest {
         Assert.assertThat(result.getId(), is(originId));
         Assert.assertThat(result.getLogin(), is(originLogin));
         Assert.assertThat(result.getPassword(), is(originPassword));
+        Assert.assertThat(result.getEmployeeId(), is(originEmp));
     }
 
     /**
@@ -120,7 +123,8 @@ public class PersonServiceTest {
         int originId = 3;
         String originLogin = "save user";
         String originPassword = "user save";
-        Person mockPerson = Person.of(originId, originLogin, originPassword);
+        int originEmp = 6;
+        Person mockPerson = Person.of(originId, originLogin, originPassword, originEmp);
         Mockito.when(this.personRepository.findById(3)).thenReturn(Optional.empty());
         Optional<Person> resultOptional = this.personService.updateUser(mockPerson);
         Assert.assertThat(resultOptional.isPresent(), is(false));
@@ -134,12 +138,14 @@ public class PersonServiceTest {
         int originId = 3;
         String originLogin = "save user";
         String originPassword = "user save";
-        Person mockPerson = Person.of(originId, originLogin, originPassword);
+        int originEmp = 6;
+        Person mockPerson = Person.of(originId, originLogin, originPassword, originEmp);
         Mockito.when(this.personRepository.findById(3)).thenReturn(Optional.of(mockPerson));
         Person savingUser = new Person();
         savingUser.setId(3);
         savingUser.setLogin("save user updated");
         savingUser.setPassword("user save updated");
+        savingUser.setEmployeeId(6);
         Mockito.when(this.personRepository.save(savingUser)).thenReturn(savingUser);
         Optional<Person> resultOptional = this.personService.updateUser(savingUser);
         Assert.assertThat(resultOptional.isPresent(), is(true));
@@ -147,6 +153,7 @@ public class PersonServiceTest {
         Assert.assertThat(result.getId(), is(originId));
         Assert.assertThat(result.getLogin(), is("save user updated"));
         Assert.assertThat(result.getPassword(), is("user save updated"));
+        Assert.assertThat(result.getEmployeeId(), is(originEmp));
     }
 
     /**
@@ -155,7 +162,7 @@ public class PersonServiceTest {
     @Test
     public void whenDeleteUnexistUserThenFalse() {
         Mockito.when(this.personRepository.findById(3)).thenReturn(Optional.empty());
-        Person deletePerson = Person.of(3, "delete user", "user delete");
+        Person deletePerson = Person.of(3, "delete user", "user delete", 8);
         boolean result = this.personService.deleteUser(deletePerson.getId());
         Assert.assertFalse(result);
     }
@@ -165,9 +172,23 @@ public class PersonServiceTest {
      */
     @Test
     public void whenDeleteExistUserThenTrue() {
-        Person deletePerson = Person.of(3, "delete user", "user delete");
+        Person deletePerson = Person.of(3, "delete user", "user delete", 9);
         Mockito.when(this.personRepository.findById(3)).thenReturn(Optional.of(deletePerson));
         boolean result = this.personService.deleteUser(deletePerson.getId());
         Assert.assertTrue(result);
+    }
+
+    /**
+     * Получение пользователей по идентификатору сотрудника.
+     */
+    @Test
+    public void whenFindByEmployeeIdThenCorrect() {
+        Person personOne = Person.of(1, "first", "first", 1);
+        List<Person> mockPersons = new ArrayList<>();
+        mockPersons.add(personOne);
+        Mockito.when(this.personRepository.findAllByEmployeeId(1)).thenReturn(mockPersons);
+        List<Person> resultList = this.personService.findAllByEmployeeId(1);
+        Assert.assertThat(resultList.size(), is(1));
+        Assert.assertThat(resultList.get(0), is(personOne));
     }
 }

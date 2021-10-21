@@ -29,14 +29,18 @@ public class Person {
     @Column
     private String password;
 
+    @Column(name = "employee_id")
+    private int employeeId;
+
     public Person() {
     }
 
-    public static Person of(int id, String login, String password) {
+    public static Person of(int id, String login, String password, int employeeId) {
         Person result = new Person();
         result.id = id;
         result.login = login;
         result.password = password;
+        result.employeeId = employeeId;
         return result;
     }
 
@@ -64,6 +68,14 @@ public class Person {
         this.password = password;
     }
 
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,11 +87,12 @@ public class Person {
         Person person = (Person) o;
         return id == person.id
                 && Objects.equals(login, person.login)
-                && Objects.equals(password, person.password);
+                && Objects.equals(password, person.password)
+                && Objects.equals(employeeId, person.employeeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password);
+        return Objects.hash(id, login, password, employeeId);
     }
 }

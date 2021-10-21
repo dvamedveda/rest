@@ -13,8 +13,8 @@ public class PersonTest {
      */
     @Test
     public void whenPersonsNotSameThenNotEquals() {
-        Person one = Person.of(1, "test user", "user test");
-        Person two = Person.of(2, "test user", "user test");
+        Person one = Person.of(1, "test user", "user test", 1);
+        Person two = Person.of(2, "test user", "user test", 1);
         Assert.assertNotEquals(one, two);
     }
 
@@ -23,7 +23,7 @@ public class PersonTest {
      */
     @Test
     public void whenCompareWithAnyOtherObjectThenNotEquals() {
-        Person one = Person.of(1, "test user", "user test");
+        Person one = Person.of(1, "test user", "user test", 2);
         Integer two = 1;
         Assert.assertNotEquals(one, two);
     }
@@ -33,8 +33,8 @@ public class PersonTest {
      */
     @Test
     public void whenSameThenHashEquals() {
-        Person one = Person.of(1, "test user", "user test");
-        Person two = Person.of(1, "test user", "user test");
+        Person one = Person.of(1, "test user", "user test", 3);
+        Person two = Person.of(1, "test user", "user test", 3);
         Assert.assertEquals(one, two);
         Assert.assertEquals(one.hashCode(), two.hashCode());
     }

@@ -3,5 +3,6 @@
 create table "person" (
   id serial primary key,
   login text,
-  password text
+  password text,
+  employee_id integer
 );
